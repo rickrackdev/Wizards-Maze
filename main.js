@@ -34,44 +34,42 @@ class Field {
   //that way it leaves a trail on where the player has been.
   movement(dir) {
     if (dir === "r") {
+      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
       this._playerPos = this._fieldArray[this._yAxis][this._xAxis++];
-      this._fieldArray[this._yAxis][this._xAxis] = this._playerPos;
     } else if (dir === "l") {
+      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
       this._playerPos = this._fieldArray[this._yAxis][this._xAxis--];
-      this._fieldArray[this._yAxis][this._xAxis] = this._playerPos;
     } else if (dir === "u") {
+      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
       this._playerPos = this._fieldArray[this._yAxis--][this._xAxis];
-      this._fieldArray[this._yAxis][this._xAxis] = this._playerPos;
     } else if (dir === "d") {
+      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
       this._playerPos = this._fieldArray[this._yAxis++][this._xAxis];
-      this._fieldArray[this._yAxis][this._xAxis] = this._playerPos;
     }
+  }
+
+  charPos(character) {
+    let coordArr = [];
+    for (let i = 0; i < this._fieldArray.length; i++) {
+      for (let j = 0; j < this._fieldArray[i].length; j++) {
+        if (this._fieldArray[i][j] === character) {
+          coordArr.push([i, j]);
+        }
+      }
+    }
+    return coordArr;
   }
 
   //not working yet
-  playerStatus() {
-    if (this._playerPos && this._fieldArray[this._yAxis][this._xAxis] === "*") {
-      process.stdout.write("Congrats, you won!");
-      process.exit;
-      return true;
-    }
+  playerStatus(winPos) {
+    winPos.forEach((position) => {
+      if (this.playerPos === position) {
+        process.stdout.write("Congrats");
+        return true;
+      }
+    });
   }
 }
-
-//Helper function to get the index where the hat variable is at.
-
-let hatIdx = (arr) => {
-  for (let i = 0; i < arr[i].length; i++) {
-    for (let j = 0; j < arr.length; j++) {
-      const element = arr[j];
-      if (arr[i][j] === "^") {
-        let coord = [i, j];
-        return coord;
-      }
-    }
-  }
-  return false;
-};
 
 //test instance for the map field
 let testField = new Field([
@@ -87,7 +85,8 @@ let testField = new Field([
 ]);
 
 //using the helper function to find the position of the hat
-const hatPos = hatIdx(testField.fieldArray);
+const hatPos = testField.charPos("^");
+console.log(hatPos);
 //initial player position
 //let playerPos = testField.fieldArray[0][0];
 
@@ -109,7 +108,6 @@ testField.print();
 /* while (testField.playerPos != testField.fieldArray[hatPos[0]][hatPos[1]]) {
   let userIn = prompt(`Your move:`).toLowerCase();
   testField.movement(userIn);
-  testField.playerStatus();
   testField.print();
 } */
 
@@ -117,4 +115,4 @@ do {
   let userIn = prompt(`Your move:`).toLowerCase();
   testField.movement(userIn);
   testField.print();
-} while (!testField.playerStatus());
+} while (!testField.playerStatus(hatPos));
