@@ -19,6 +19,27 @@ class Field {
     return this._fieldArray;
   }
 
+  static generateField(fHeight, fWidth) {
+    let mapArr = [fieldCharacter, hole];
+    let randIdx;
+    let newMap = [];
+
+    for (let i = 0; i < fHeight; i++) {
+      let newMapPiece = [];
+      for (let j = 0; j < fWidth; j++) {
+        randIdx = mapArr[Math.floor(Math.random() * mapArr.length)];
+        newMapPiece.push(randIdx);
+      }
+      newMap.push(newMapPiece);
+    }
+    let randY = Math.floor(Math.random() * newMap.length);
+    let randX = Math.floor(Math.random() * newMap[0].length);
+
+    newMap[randY][randX] = hat;
+
+    return newMap;
+  }
+
   //prints the map field to console, converts the array raw data to string and joins the data removing the comma and adding a breakline per each line on the map field.
   print() {
     this._fieldArray.forEach((line) => {
@@ -29,19 +50,32 @@ class Field {
   //player movement method, gets an user input and depending on the direction adds or substracts the index value to move in each direction, then it replaces the previous position with the path character
   //that way it leaves a trail on where the player has been.
   movement(dir) {
+    let newY = this._yAxis;
+    let newX = this._xAxis;
+    //gets the new player position.
     if (dir === "r") {
-      this._fieldArray[this._yAxis][this._xAxis++];
-      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
+      newX++;
     } else if (dir === "l") {
-      this._fieldArray[this._yAxis][this._xAxis--];
-      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
+      newX--;
     } else if (dir === "u") {
-      this._fieldArray[this._yAxis--][this._xAxis];
-      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
+      newY--;
     } else if (dir === "d") {
-      this._fieldArray[this._yAxis++][this._xAxis];
-      this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
+      newY++;
     }
+    //check if the new position is out of bounds.
+    if (
+      newY < 0 ||
+      newY >= this._fieldArray.length ||
+      newX < 0 ||
+      newX >= this._fieldArray[0].length
+    ) {
+      process.stdout.write(`Out of bounds, try again!\n`);
+      process.exit();
+    }
+    //updates player position and marks the map.
+    this._xAxis = newX;
+    this._yAxis = newY;
+    this._fieldArray[this._yAxis][this._xAxis] = pathCharacter;
   }
 
   charPos(character) {
@@ -77,27 +111,16 @@ class Field {
       this.print();
     } while (this.playerStatus(w, l) === null);
     if (this.playerStatus(w, l) === true) {
-      process.stdout.write("Congrats you won!");
+      process.stdout.write("You escaped the maze, congratulations!");
     } else if (this.playerStatus(w, l) === false) {
-      process.stdout.write("You lost!");
+      process.stdout.write(
+        "Oh no!, you fell down a hole, good luck next time!"
+      );
     }
   }
 }
 
-//test instance for the map field
-let testField = new Field([
-  [pathCharacter, fieldCharacter, fieldCharacter, fieldCharacter, hole],
-  [fieldCharacter, hole, fieldCharacter, fieldCharacter, hole],
-  [hole, fieldCharacter, fieldCharacter, hole, fieldCharacter],
-  [fieldCharacter, hat, fieldCharacter, fieldCharacter, hole],
-  [fieldCharacter, fieldCharacter, fieldCharacter, fieldCharacter, hole],
-  [hole, fieldCharacter, fieldCharacter, hole, fieldCharacter],
-  [fieldCharacter, fieldCharacter, hole, fieldCharacter, fieldCharacter],
-  [hole, fieldCharacter, fieldCharacter, hole, fieldCharacter],
-  [fieldCharacter, fieldCharacter, fieldCharacter, fieldCharacter, hole],
-]);
-
-//using the class method to find the position of the hat and holes
+let testField = new Field(Field.generateField(5, 5));
 const hatPos = testField.charPos(hat);
 const holePos = testField.charPos(hole);
 testField.print();
