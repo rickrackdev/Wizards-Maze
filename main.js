@@ -32,10 +32,10 @@ class Field {
       }
       newMap.push(newMapPiece);
     }
-    let randY = Math.floor(Math.random() * newMap.length);
-    let randX = Math.floor(Math.random() * newMap[0].length);
 
-    newMap[randY][randX] = hat;
+    newMap[Math.floor(Math.random() * newMap.length)][
+      Math.floor(Math.random() * newMap[0].length)
+    ] = hat;
 
     return newMap;
   }
